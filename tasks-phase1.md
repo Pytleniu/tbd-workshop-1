@@ -4,9 +4,12 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
 
 1. Authors:
 
-   ***Zespół 16***
+   ***Group number: 16***
+    - Michał Kopeć
+    - Wiktor Pytlewski
 
-   ***[https://github.com/Pytleniu/tbd-workshop-1](https://github.com/Pytleniu/tbd-workshop-1)***
+
+   ***Link to forked repo: [https://github.com/Pytleniu/tbd-workshop-1](https://github.com/Pytleniu/tbd-workshop-1)***
 
 2. Follow all steps in README.md.
 
