@@ -100,6 +100,7 @@ Infracost ran successfully for this pull request, and the result shows there was
     ![Failed Big Query](doc/figures/failed_query.png)
 
     ***why does ORC not require a table schema?***
+    ORC files inherently contain their own schema, removing the need for a separate table schema definition.
 
 11. Find and correct the error in spark-job.py
 
