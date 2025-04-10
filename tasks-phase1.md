@@ -22,16 +22,39 @@ IMPORTANT ❗ ❗ ❗ Please remember to destroy all the resources after each wo
 
     2. Create PR from this branch to **YOUR** master and merge it to make new release.
 
-    ***place the screenshot from GA after succesfull application of release***
+    ![Successful application of release workflow](doc/figures/tasks_5_img.png)
+
 
 
 6. Analyze terraform code. Play with terraform plan, terraform graph to investigate different modules.
 
-    ***describe one selected module and put the output of terraform graph for this module here***
+After executing the command: `terraform plan -var-file="env\project.tfvars" -out="terraform_plan"`, a plan was generated for applying Terraform. The output shows the planned actions Terraform will perform, including which modules will be created, replaced, or updated. Additionally, the command provides details about which images and resources have been modified since the last application, as well as highlighting deprecated variables and resources.
+
+By executing the command: `terraform graph -module-depth=1 > data-pipeline-graph.dot`, we generated a graph of the entire architecture and saved it into a file. Afterward, we isolated the part describing the Data Pipeline Module and created a diagram based on it.
+
+**Data Pipeline Module** handles the creation and setup of Google Cloud Storage (GCS) buckets that are used to store scripts for a data pipeline powered by Apache Airflow. The module creates two separate buckets: one for storing the code for a Spark job (`tbd-code-bucket`), and another for storing pipeline data (`tbd-data-bucket`). Additionally, the module configures and sets up the necessary IAM to assign appropriate permissions to service accounts, along with creating a GCS bucket object for the code bucket.
+
+The following diagram illustrates the relationships and dependencies between the resources created by this module:
+
+![Terrafrom Graph output for Data Pipeline module](doc/figures/data-pipeline-graph.png)
+
+**Resources:**
+- `google_storage_bucket.tbd-code-bucket`: This GCS bucket stores the code related to the data pipeline, specifically for the Spark job.
+- `google_storage_bucket.tbd-data-bucket`: A second GCS bucket that is used for storing the pipeline's data.
+- `google_storage_bucket_iam_member.tbd-data-bucket-iam-editor`: This IAM resource grants the specified service account (`tbd-composer-sa`) the `storage.objectEditor` role on the `tbd-data-bucket`, allowing it to both read and write to the bucket.
+- `google_storage_bucket_iam_member.tbd-code-bucket-iam-viewer`: This IAM resource grants the specified service account (`tbd-composer-sa`) the `storage.objectViewer` role on the `tbd-code-bucket`, providing it read-only access to the bucket.
+- `google_storage_bucket_object.dag-code`: This resource stores a file in the `tbd-code-bucket` that contains the DAG code for Apache Airflow. The file will be used in the pipeline to define the workflow.
+- `google_storage_bucket_object.dbt-dag-code`: This resource is similar to `dag-code` but stores a different file that contains the DBT (Data Build Tool) DAG code in the `tbd-code-bucket`.
+- `google_storage_bucket_object.job-code`: This resource holds a Spark job script in the `tbd-code-bucket` that is used by the data pipeline during execution.
 
 7. Reach YARN UI
 
-   ***place the command you used for setting up the tunnel, the port and the screenshot of YARN UI here***
+The command that was used to set up the tunnel:
+`gcloud compute ssh tbd-cluster-m --project=tbd-2025l-304273 --zone=europe-west1-d --tunnel-through-iap --ssh-flag="-L 8088:localhost:8088"`
+
+With the tunnel open, YARN UI was accessible at port 8088: http://localhost:8088/cluster.
+
+![Screenshot of YARN UI](doc/figures/yarn_ui.png)
 
 8. Draw an architecture diagram (e.g. in draw.io) that includes:
     1. VPC topology with service assignment to subnets
