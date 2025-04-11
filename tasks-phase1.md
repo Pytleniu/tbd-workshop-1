@@ -63,6 +63,7 @@ With the tunnel open, YARN UI was accessible at port 8088: http://localhost:8088
     4. Description of network communication (ports, why it is necessary to specify the host for the driver) of Apache Spark running from Vertex AI Workbech
 
     ***place your diagram here***
+    ![Architecture diagram](doc/figures/arch_diagram.png)
 
 9. Create a new PR and add costs by entering the expected consumption into Infracost
 For all the resources of type: `google_artifact_registry`, `google_storage_bucket`, `google_service_networking_connection`
@@ -95,16 +96,38 @@ Infracost ran successfully for this pull request, and the result shows there was
 
 10. Create a BigQuery dataset and an external table using SQL
 
-    ***place the code and output here***
+    The dataset and external table were created using the following SQL code:
+
+    ```SQL
+    CREATE SCHEMA IF NOT EXISTS demo OPTIONS(location = 'europe-west1');
+
+    CREATE OR REPLACE EXTERNAL TABLE demo.shakespeare
+    OPTIONS (
+        format = 'ORC',
+        uris = ['gs://tbd-2025l-304273-data/data/shakespeare/*.orc']);
+
+    SELECT * FROM demo.shakespeare LIMIT 10;
+    ```
+
+    The query initially returned an error:
 
     ![Failed Big Query](doc/figures/failed_query.png)
 
+    Only after completing Task 11 (fixing the Spark job) did the query execute successfully:
+
+    ![Working Big Query](doc/figures/succes_query.png)
+
+    As a result, we obtained a newly created dataset and an external table that can now be queried:
+
+    ![select_results](doc/figures/select_results.png)
+
     ***why does ORC not require a table schema?***
-    ORC files inherently contain their own schema, removing the need for a separate table schema definition.
+    Because ORC files embed their schema information within the file itself, a separate table schema is unnecessary. This approach is sometimes referred to as “schema-on-read,” meaning the schema is determined when the data is read rather than at the time of writing. This provides greater flexibility and is especially useful in situations where data schemas change frequently
 
 11. Find and correct the error in spark-job.py
 
     ***describe the cause and how to find the error***
+    ![Spark error logs](doc/figures/Spark_error.png)
 
 12. Add support for preemptible/spot instances in a Dataproc cluster
 
